@@ -1,0 +1,9 @@
+- job_name: k8s-kube-state-metrics-YourDefinedK8sClusterName
+  honor_timestamps: true
+  metrics_path: /metrics
+  scheme: http
+  static_configs:
+  - targets: ['IP:PORT']
+  metric_relabel_configs:
+  - target_label: cluster
+    replacement: YourDefinedK8sClusterName

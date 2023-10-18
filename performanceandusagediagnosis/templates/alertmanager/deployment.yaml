@@ -1,0 +1,60 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "alertmanager.fullname" . }}
+  namespace: {{ .Release.Namespace | quote }}
+  labels:
+    {{- include "alertmanager.labels" . | nindent 4 }}
+spec:
+  {{- if not .Values.alertmanager.autoscaling.enabled }}
+  replicas: {{ .Values.alertmanager.replicaCount }}
+  {{- end }}
+  selector:
+    matchLabels:
+      {{- include "alertmanager.selectorLabels" . | nindent 6 }}
+  template:
+    metadata:
+      labels:
+        {{- include "alertmanager.labels" . | nindent 8 }}
+    spec:
+      {{- with .Values.alertmanager.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.enablerNodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- if not .Values.enablerNodeSelector }}
+        {{- with .Values.alertmanager.nodeSelector }}
+      nodeSelector:
+          {{- toYaml . | nindent 8 }}
+        {{- end }}
+      {{- end }}
+      {{- with .Values.alertmanager.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.alertmanager.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      securityContext:
+        {{- toYaml .Values.alertmanager.podSecurityContext | nindent 8 }}
+      containers:
+        - name: alertmanager
+          securityContext:
+            {{- toYaml .Values.alertmanager.securityContext | nindent 12 }}
+          image: "{{ .Values.alertmanager.image.repository }}:{{ .Values.alertmanager.image.tag | default .Chart.AppVersion }}"
+          imagePullPolicy: {{ .Values.alertmanager.image.pullPolicy }}
+          ports:
+            - name: alertmanager
+              containerPort: {{ .Values.alertmanager.service.ports.alertmanager.containerPort }}
+              protocol: {{ .Values.alertmanager.service.ports.alertmanager.protocol }}
+          resources:
+            {{- toYaml .Values.alertmanager.resources | nindent 12 }}
+          {{- with .Values.alertmanager.envVars }}
+          env:
+            - name: EXAMPLE_ENV_VAR
+              value: {{ .exampleEnvVar | quote }}
+          {{- end }}

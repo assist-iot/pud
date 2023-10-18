@@ -1,0 +1,60 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "targetapi.fullname" . }}
+  namespace: {{ .Release.Namespace | quote }}
+  labels:
+    {{- include "targetapi.labels" . | nindent 4 }}
+spec:
+  {{- if not .Values.targetapi.autoscaling.enabled }}
+  replicas: {{ .Values.targetapi.replicaCount }}
+  {{- end }}
+  selector:
+    matchLabels:
+      {{- include "targetapi.selectorLabels" . | nindent 6 }}
+  template:
+    metadata:
+      labels:
+        {{- include "targetapi.labels" . | nindent 8 }}
+    spec:
+      {{- with .Values.targetapi.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.enablerNodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- if not .Values.enablerNodeSelector }}
+        {{- with .Values.targetapi.nodeSelector }}
+      nodeSelector:
+          {{- toYaml . | nindent 8 }}
+        {{- end }}
+      {{- end }}
+      {{- with .Values.targetapi.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.targetapi.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      securityContext:
+        {{- toYaml .Values.targetapi.podSecurityContext | nindent 8 }}
+      containers:
+        - name: targetapi
+          securityContext:
+            {{- toYaml .Values.targetapi.securityContext | nindent 12 }}
+          image: "{{ .Values.targetapi.image.repository }}:{{ .Values.targetapi.image.tag | default .Chart.AppVersion }}"
+          imagePullPolicy: {{ .Values.targetapi.image.pullPolicy }}
+          ports:
+            - name: targetapi
+              containerPort: {{ .Values.targetapi.service.ports.targetapi.containerPort }}
+              protocol: {{ .Values.targetapi.service.ports.targetapi.protocol }}
+          resources:
+            {{- toYaml .Values.targetapi.resources | nindent 12 }}
+          {{- with .Values.targetapi.envVars }}
+          env:
+            - name: TARGET_API_PORT
+              value: {{ .TARGET_API_PORT | quote }}
+          {{- end }}

@@ -1,0 +1,75 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "prometheusesadapter.fullname" . }}
+  namespace: {{ .Release.Namespace | quote }}
+  labels:
+    {{- include "prometheusesadapter.labels" . | nindent 4 }}
+spec:
+  {{- if not .Values.prometheusesadapter.autoscaling.enabled }}
+  replicas: {{ .Values.prometheusesadapter.replicaCount }}
+  {{- end }}
+  selector:
+    matchLabels:
+      {{- include "prometheusesadapter.selectorLabels" . | nindent 6 }}
+  template:
+    metadata:
+      labels:
+        {{- include "prometheusesadapter.labels" . | nindent 8 }}
+    spec:
+      {{- with .Values.prometheusesadapter.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.enablerNodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- if not .Values.enablerNodeSelector }}
+        {{- with .Values.prometheusesadapter.nodeSelector }}
+      nodeSelector:
+          {{- toYaml . | nindent 8 }}
+        {{- end }}
+      {{- end }}
+      {{- with .Values.prometheusesadapter.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.prometheusesadapter.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      securityContext:
+        {{- toYaml .Values.prometheusesadapter.podSecurityContext | nindent 8 }}
+      containers:
+        - name: prometheusesadapter
+          securityContext:
+            {{- toYaml .Values.prometheusesadapter.securityContext | nindent 12 }}
+          image: "{{ .Values.prometheusesadapter.image.repository }}:{{ .Values.prometheusesadapter.image.tag | default .Chart.AppVersion }}"
+          imagePullPolicy: {{ .Values.prometheusesadapter.image.pullPolicy }}
+          ports:
+            - name: pea8000
+              containerPort: {{ .Values.prometheusesadapter.service.ports.pea8000.containerPort }}
+              protocol: {{ .Values.prometheusesadapter.service.ports.pea8000.protocol }}
+            - name: pea8001
+              containerPort: {{ .Values.prometheusesadapter.service.ports.pea8001.containerPort }}
+              protocol: {{ .Values.prometheusesadapter.service.ports.pea8001.protocol }}
+          resources:
+            {{- toYaml .Values.prometheusesadapter.resources | nindent 12 }}
+          {{- with .Values.prometheusesadapter.envVars }}
+          env:
+            - name: ES_URL
+              value: {{ .ES_URL | quote }}
+            - name: DEBUG
+              value: "true"
+            - name: ES_INDEX_DAILY
+              value: "true"
+            - name: ES_INDEX_MAX_DOCS
+              value: "2000"
+            - name: ES_INDEX_REPLICAS
+              value: "0"
+            - name: ES_INDEX_SHARDS
+              value: "1"
+            #- name: ES_URL
+            #  value: http://elasticsearch:9200
+          {{- end }}

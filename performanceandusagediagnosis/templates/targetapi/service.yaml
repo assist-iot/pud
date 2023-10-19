@@ -1,0 +1,19 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "targetapi.fullname" . }}
+  namespace: {{ .Release.Namespace | quote }}
+  labels:
+    {{- include "targetapi.labels" . | nindent 4 }}
+spec:
+  type: {{ .Values.targetapi.service.type }}
+  ports:
+    - name: targetapi
+      port: {{ .Values.targetapi.service.ports.targetapi.port }}
+      targetPort: {{ .Values.targetapi.service.ports.targetapi.targetPort }}
+      protocol: {{ .Values.targetapi.service.ports.targetapi.protocol }}
+      {{- if and (or (eq .Values.targetapi.service.type "NodePort") (eq .Values.targetapi.service.type "LoadBalancer")) (not (empty .Values.targetapi.service.ports.targetapi.nodePort)) }}
+      nodePort: {{ .Values.targetapi.service.ports.targetapi.nodePort }}
+      {{- end }}
+  selector:
+    {{- include "targetapi.selectorLabels" . | nindent 4 }}

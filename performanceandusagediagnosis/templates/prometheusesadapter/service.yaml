@@ -1,0 +1,26 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "prometheusesadapter.fullname" . }}
+  namespace: {{ .Release.Namespace | quote }}
+  labels:
+    {{- include "prometheusesadapter.labels" . | nindent 4 }}
+spec:
+  type: {{ .Values.prometheusesadapter.service.type }}
+  ports:
+    - name: pea8000
+      port: {{ .Values.prometheusesadapter.service.ports.pea8000.port }}
+      targetPort: {{ .Values.prometheusesadapter.service.ports.pea8000.targetPort }}
+      protocol: {{ .Values.prometheusesadapter.service.ports.pea8000.protocol }}
+      {{- if and (or (eq .Values.prometheusesadapter.service.type "NodePort") (eq .Values.prometheusesadapter.service.type "LoadBalancer")) (not (empty .Values.prometheusesadapter.service.ports.pea8000.nodePort)) }}
+      nodePort: {{ .Values.prometheusesadapter.service.ports.pea8000.nodePort }}
+      {{- end }}
+    - name: pea8001
+      port: {{ .Values.prometheusesadapter.service.ports.pea8001.port }}
+      targetPort: {{ .Values.prometheusesadapter.service.ports.pea8001.targetPort }}
+      protocol: {{ .Values.prometheusesadapter.service.ports.pea8001.protocol }}
+      {{- if and (or (eq .Values.prometheusesadapter.service.type "NodePort") (eq .Values.prometheusesadapter.service.type "LoadBalancer")) (not (empty .Values.prometheusesadapter.service.ports.pea8001.nodePort)) }}
+      nodePort: {{ .Values.prometheusesadapter.service.ports.pea8001.nodePort }}
+      {{- end }}
+  selector:
+    {{- include "prometheusesadapter.selectorLabels" . | nindent 4 }}

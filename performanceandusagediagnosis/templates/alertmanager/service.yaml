@@ -1,0 +1,19 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "alertmanager.fullname" . }}
+  namespace: {{ .Release.Namespace | quote }}
+  labels:
+    {{- include "alertmanager.labels" . | nindent 4 }}
+spec:
+  type: {{ .Values.alertmanager.service.type }}
+  ports:
+    - name: alertmanager
+      port: {{ .Values.alertmanager.service.ports.alertmanager.port }}
+      targetPort: {{ .Values.alertmanager.service.ports.alertmanager.targetPort }}
+      protocol: {{ .Values.alertmanager.service.ports.alertmanager.protocol }}
+      {{- if and (or (eq .Values.alertmanager.service.type "NodePort") (eq .Values.alertmanager.service.type "LoadBalancer")) (not (empty .Values.alertmanager.service.ports.alertmanager.nodePort)) }}
+      nodePort: {{ .Values.alertmanager.service.ports.alertmanager.nodePort }}
+      {{- end }}
+  selector:
+    {{- include "alertmanager.selectorLabels" . | nindent 4 }}

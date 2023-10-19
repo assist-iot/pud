@@ -1,0 +1,17 @@
+{{- if .Values.globalService }}
+apiVersion: assist.eu/v1
+kind: MultiClusterService
+metadata:
+  name: {{ include "server.fullname" . }}
+  namespace: {{ .Release.Namespace | quote }}
+  annotations:
+    io.cilium/global-service: "true"
+  labels:
+    {{- include "server.labels" . | nindent 4 }}
+spec:
+  ports:
+    - name: server
+      port: {{ .Values.server.service.ports.server.port }}
+      targetPort: {{ .Values.server.service.ports.server.targetPort }}
+      protocol: {{ .Values.server.service.ports.server.protocol }}
+{{- end }}

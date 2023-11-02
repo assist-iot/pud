@@ -23,13 +23,13 @@ $ kubectl get pods
 The result should show something like:
 
 ```console
-NAME                                                              READY   STATUS             RESTARTS       AGE
-pud-grafana-6ff6854bb5-fp9q2                                      1/1     Running            0              10m
-pud-kube-state-metrics-5cdcb9bfd9-p7gmz                           1/1     Running            0              10m
-pud-performanceandusagediagnosis-alertmanager-6f65b65767-w57v8    1/1     Running            0              10m
-pud-performanceandusagediagnosis-prometheusesadapter-6866dp4c4x   1/1     Running            0              10m
-pud-performanceandusagediagnosis-server-c6b6f76c6-sdkhz           2/2     Running            0              10m
-pud-performanceandusagediagnosis-targetapi-676d6998f-h8bzd        1/1     Running            0              10m
+NAME                                                              READY   STATUS             RESTARTS        AGE
+pude-grafana-6769c95d99-gz8q7                                     1/1     Running            0               10m
+pude-kube-state-metrics-5d764bf9d9-2p6r7                          1/1     Running            0               10m
+pude-performanceandusagediagnosis-prometheusesadapter-6d87pgkwt   1/1     Running            0               10m
+pude-performanceandusagediagnosis-server-579b59c787-6zngr         2/2     Running            0               10m
+pude-performanceandusagediagnosis-targetapi-68b74bb646-qhtnr      1/1     Running            0               10m
+pude-prometheus-node-exporter-fjr2k                               1/1     Running            0               10m
 ```
 
 ### To access PUD's Prometheus server UI:

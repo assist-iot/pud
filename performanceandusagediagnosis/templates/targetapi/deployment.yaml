@@ -1,3 +1,4 @@
+{{- if .Values.targetapi.enabled }}
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -58,3 +59,12 @@ spec:
             - name: TARGET_API_PORT
               value: {{ .TARGET_API_PORT | quote }}
           {{- end }}
+          volumeMounts:
+          - mountPath: /targets
+            name: targetapi-volume
+      volumes:
+      - name: targetapi-volume
+        persistentVolumeClaim:
+#            claimName: targetapi-persistent-volume-claim
+            claimName: {{ include "targetapi.fullname" . }}-volume-claim
+{{- end }}

@@ -1,0 +1,20 @@
+{{- if .Values.targetapi.enabled }}
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+#  name: targetapi-persistent-volume
+  name: {{ include "targetapi.fullname" . }}-volume
+  labels:
+#    type: local
+#    app: targetapi
+    {{- include "targetapi.labels" . | nindent 4 }}
+spec:
+  volumeMode: Filesystem
+  capacity:
+    storage: 256Mi
+  accessModes:
+    - ReadWriteMany
+  hostPath:
+    path: "/targets"
+  persistentVolumeReclaimPolicy: Retain
+{{- end }}

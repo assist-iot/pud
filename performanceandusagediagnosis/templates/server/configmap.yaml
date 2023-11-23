@@ -61,16 +61,19 @@ data:
         - targets:
           - localhost:9090
 
-    - job_name: httpsd
+    - job_name: Httpsd-Targets
       http_sd_configs:
-        #- url: "http://pude-performanceandusagediagnosis-targetapi.default.svc.cluster.local:5000"
-        - url: http://{{ include "targetapi.fullname" $ }}.default.svc.cluster.local:{{ $root.Values.targetapi.service.ports.targetapi.port }}
+        - url: http://{{ include "targetapi.fullname" $ }}.{{ $.Release.Namespace }}.svc.cluster.local:{{ $root.Values.targetapi.service.ports.targetapi.port }}
  
+    - job_name: Node_exporter
+      static_configs:
+        - targets:
+          - {{ $.Release.Name }}-prometheus-node-exporter.{{ $.Release.Namespace }}.svc.cluster.local:9100
+
     - job_name: kube-state-metrics
       static_configs:
-        #- targets: ["pude-kube-state-metrics.default.svc.cluster.local:8080"]
         - targets:
-          - {{ $.Release.Name }}-kube-state-metrics.default.svc.cluster.local:8080
+          - {{ $.Release.Name }}-kube-state-metrics.{{ $.Release.Namespace }}.svc.cluster.local:8080
 
 {{- end }}
 {{- end }}

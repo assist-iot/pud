@@ -94,6 +94,8 @@ server:
 
 # Component alertmanager values.
 alertmanager:
+
+  enabled: false
   tier: internal
   replicaCount: 1
 
@@ -156,8 +158,11 @@ alertmanager:
   tolerations: []
   affinity: {}
 
+
 # Component prometheusesadapter values.
 prometheusesadapter:
+
+  enabled: true
   tier: internal
   replicaCount: 1
 
@@ -218,7 +223,7 @@ prometheusesadapter:
   # Include here the environment variables to be used in containers section of the component's manifest.
   # TODO: Here and in the manifest is included an example, please adapt them to the requirements of your component.
   envVars:
-    ES_URL: http://elasticsearch:9200
+    ES_URL: "http://10.97.108.30:9200"
 
 
   # Configure this parameters to deploy the component in specific K8s node(s).
@@ -228,6 +233,8 @@ prometheusesadapter:
 
 # Component targetapi values.
 targetapi:
+
+  enabled: true
   tier: internal
   replicaCount: 1
 
@@ -235,6 +242,7 @@ targetapi:
   imagePullSecrets: []
   image:
     repository: gitlab.assist-iot.eu:5050/enablers-registry/public/pud/prom-target-api
+    #repository: kostasiccs/prometheus-target-api
     # Overrides the image tag whose default is the chart appVersion.
     tag: "latest"
     pullPolicy: IfNotPresent

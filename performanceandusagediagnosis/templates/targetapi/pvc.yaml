@@ -1,0 +1,19 @@
+{{- if .Values.targetapi.enabled }}
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+#  name: targetapi-persistent-volume-claim
+  name: {{ include "targetapi.fullname" . }}-volume-claim
+  labels:
+#    app: targetapi
+    {{- include "targetapi.labels" . | nindent 4 }}
+spec:
+  accessModes:
+    - ReadWriteMany
+  resources:
+    requests:
+      storage: 256Mi
+  selector:
+    matchLabels:
+      pv: targetapi-persistent-volume
+{{- end }}

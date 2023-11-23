@@ -1,3 +1,4 @@
+{{- if .Values.prometheusesadapter.enabled }}
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -73,3 +74,4 @@ spec:
             #- name: ES_URL
             #  value: http://elasticsearch:9200
           {{- end }}
+{{- end }}
